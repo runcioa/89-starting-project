@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Button from "../UI/Button";
 
 import Card from "../UI/Card";
@@ -7,16 +7,22 @@ import classes from './AddUser.module.css'
 
 import ErrorModule from "../UI/ErrorModal";
 
+import Wrapper from "../Helpers/Wrapper";
+
 const AddUser = (props) => {
 
-    const [enteredUserName, setEnterderdUserName] = useState('');
-    const [enteredUserAge, setEnterderdUserAge] = useState('');
+    const nameInputRef = useRef();
+    const ageInputRef = useRef();
+
+   
     const [error, setError] = useState();
 
     const AddUserHandler = (event) => {
         event.preventDefault();
+        const enteredName = nameInputRef.current.value;
+        const enteredAge = ageInputRef.current.value;
 
-        if (enteredUserName.length === 0 || setEnterderdUserAge === 0) {
+        if (enteredName.length === 0 || enteredAge === 0) {
             setError({
                 title: 'Invalid input',
                 message: 'Please enter a valid name and age (non-empty value)'
@@ -24,7 +30,7 @@ const AddUser = (props) => {
             return;
         }
 
-        if (+enteredUserAge < 0) {
+        if (+enteredAge < 0) {
             setError({
                 title: 'Invalid age',
                 message: 'Please enter a valid age (non-empty value)'
@@ -32,37 +38,43 @@ const AddUser = (props) => {
             return;
         }
 
-        props.onAddUser(enteredUserName, enteredUserAge);
+        props.onAddUser(enteredName, enteredAge);
+        nameInputRef.current.value = '';
+        ageInputRef.current.value = '';
 
-        setEnterderdUserAge('');
-        setEnterderdUserName('');
+       
     }
 
-    const usernameChangeHandler = (event) => {
-        setEnterderdUserName(event.target.value);
-    }
-    const ageChangeHandler = (event) => {
-        setEnterderdUserAge(event.target.value);
-    }
 
-    const errorHandler = ()=>{
+
+    const errorHandler = () => {
         setError(null);
     }
 
 
     return (
-        <div>
-            {error && <ErrorModule title={error.title} message={error.message} onConfirm={errorHandler}/>}
+        <Wrapper>
+            {error && <ErrorModule title={error.title} message={error.message} onConfirm={errorHandler} />}
             <Card className={classes.input}>
                 <form onSubmit={AddUserHandler}  >
                     <label htmlFor="username">Username</label>
-                    <input id="username" type="text" value={enteredUserName} onChange={usernameChangeHandler} />
+                    <input
+                        id="username"
+                        type="text"
+                      
+                        ref={nameInputRef}
+                    />
+
                     <label htmlFor="age">Age(Years)</label>
-                    <input id="age" type="numeber" value={enteredUserAge} onChange={ageChangeHandler} />
+                    <input
+                        id="age"
+                        type="numeber"
+                    
+                        ref={ageInputRef}/>
                     <Button type="submit">Add User</Button>
                 </form>
             </Card>
-        </div>
+        </Wrapper>
     )
 }
 
